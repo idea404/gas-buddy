@@ -1,0 +1,34 @@
+{
+  "name": "gas-buddy",
+  "version": "0.1.0",
+  "description": "Gas Fee Calculation Service for NEAR Smart Contracts",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "ava --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idea404/gas-buddy.git"
+  },
+  "keywords": [
+    "gas",
+    "near-protocol",
+    "near",
+    "smart-contract",
+    "gas-profile"
+  ],
+  "author": "Dennis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/idea404/gas-buddy/issues"
+  },
+  "homepage": "https://github.com/idea404/gas-buddy#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "near-workspaces": "^3.1.0"
+  }
+}

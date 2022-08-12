@@ -1,27 +1,19 @@
-import { Worker, NEAR } from "near-workspaces"
+import { NEAR, Worker } from "near-workspaces";
 
-const DEFAULT_CONTRACT_INIT_BALANCE = NEAR.parse('1000 N').toJSON();
+const DEFAULT_CONTRACT_INIT_BALANCE = NEAR.parse("1000 N").toJSON();  // TODO: use config to set init_balance
 const DEFAULT_OPTIONS = {
-    gas: "1000000",
-    attached_deposit: "0",
-}
+  gas: "100000", // TODO: use config to set gas
+  attached_deposit: "0", // TODO: use config to set deposit
+};
 
 // function for profiling
 export async function profileGasCosts(contractAccountId, functionName, argsObject, blockId) {
   const worker = await Worker.init();
   const root = worker.rootAccount;
 
-  const contract = await root.importContract({
-    mainnetContract: contractAccountId,
-    blockId: blockId,
-    withData: true,
-    initialBalance: DEFAULT_CONTRACT_INIT_BALANCE,
-  });
+  const contract = await spoonContract(root, contractAccountId, blockId);
 
-  // TODO: handle data > 50KB
-
-  // const contract = await root.devDeploy(wasmFileLocation, { initialBalance: NEAR.parse("100 N").toJSON() });
-  const alice = await root.createSubAccount("alice", { initialBalance: NEAR.parse("100 N").toJSON() });
+  const alice = await root.createSubAccount("alice", { initialBalance: NEAR.parse("100 N").toJSON() }); // TODO: use config to set initial balance for account 
 
   // TODO: pass parameters and account details
   await alice.callRaw(contract, functionName, argsObject, DEFAULT_OPTIONS);
@@ -30,4 +22,29 @@ export async function profileGasCosts(contractAccountId, functionName, argsObjec
   await t.context.worker.tearDown().catch((error) => {
     console.log("Failed to tear down the worker:", error);
   });
+}
+
+async function spoonContract(root, contractAccountId, blockId) {
+  try {
+    return (contract = await root.importContract({
+      mainnetContract: contractAccountId,
+      blockId: blockId,
+      withData: true,
+      initialBalance: DEFAULT_CONTRACT_INIT_BALANCE,
+    }));
+  } catch (error) {
+    if (error.message.includes(`State of contract ${contractAccountId} is too large to be viewed`)) {
+      // TODO: use winston logger to log outcome
+      return (contract = await root.importContract({
+        mainnetContract: contractAccountId,
+        blockId: blockId,
+        withData: false,
+        initialBalance: DEFAULT_CONTRACT_INIT_BALANCE,
+      }));
+    }
+    if (error.message.includes("The contract is not initialized")) {
+      // TODO: use winston logger to log outcome
+      throw new Error(`Contract deployed to ${contractAccountId} not initialized. Please provide a initialized contract.`);
+    }
+  }
 }

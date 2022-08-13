@@ -4,7 +4,7 @@ const PORT = process.env.PORT;
 
 app.use(express.json());
 
-app.post("/", (req, res) => {
+app.post("/test", (req, res) => {
   const { contract_account_id, function_name } = req.query;
   const args = req.body;
 
@@ -17,6 +17,18 @@ app.post("/", (req, res) => {
     args: `paramA: ${args.paramA}, paramB: ${args.paramB}`,
   });
 });
+
+app.post("/", async (req, res) => {
+  const { contract_account_id, function_name } = req.query;
+  const { args } = req.body;
+
+  // TODO: validate contract_account_id and function_name and args
+
+  res.status(200).send(
+    await profileGasCosts(contract_account_id, function_name, args)
+  );
+});
+
 
 app.listen(PORT, () => {
   if (!PORT) {

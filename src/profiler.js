@@ -15,16 +15,20 @@ export async function profileGasCosts(contractAccountId, functionName, argsObjec
 
   const alice = await root.createSubAccount("alice", { initialBalance: NEAR.parse("100 N").toJSON() }); // TODO: use config to set initial balance for account 
 
-  // TODO: pass parameters and account details
-  await alice.callRaw(contract, functionName, argsObject, DEFAULT_OPTIONS);
+  const result = await alice.callRaw(contract, functionName, argsObject, DEFAULT_OPTIONS);
 
-  // Finally stop the sandbox server
-  await t.context.worker.tearDown().catch((error) => {
-    console.log("Failed to tear down the worker:", error);
+  await t.context.worker.tearDown().catch((error) => { 
+    console.log("Failed to tear down the worker:", error); 
   });
+
+  const gasProfileObject = extractGasProfile(result);
+  const enrichedGasProfileObject = enrichGasProfile(gasProfileObject);
+
+  return enrichedGasProfileObject;
 }
 
 async function spoonContract(root, contractAccountId, blockId) {
+  // TODO: use winston to log the contract creation 
   try {
     return (contract = await root.importContract({
       mainnetContract: contractAccountId,
@@ -47,4 +51,14 @@ async function spoonContract(root, contractAccountId, blockId) {
       throw new Error(`Contract deployed to ${contractAccountId} not initialized. Please provide a initialized contract.`);
     }
   }
+}
+
+function extractGasProfile(result) {
+  // TODO
+  return result;
+}
+
+function enrichGasProfile(gasProfileObject) {
+  // TODO
+  return gasProfileObject;
 }

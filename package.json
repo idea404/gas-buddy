@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "Gas Fee Calculation Service for NEAR Smart Contracts",
   "main": "index.js",
+  "author": "idea404",
+  "license": "MIT",
   "directories": {
     "doc": "docs"
   },
@@ -21,8 +23,6 @@
     "smart-contract",
     "gas-profile"
   ],
-  "author": "Dennis",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/idea404/gas-buddy/issues"
   },

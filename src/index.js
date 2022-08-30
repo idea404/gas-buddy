@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const profiler = require("./profiler");
 const PORT = process.env.PORT;
 
 app.use(express.json());
@@ -25,7 +26,7 @@ app.post("/", async (req, res) => {
   // TODO: validate contract_account_id and function_name and args
 
   res.status(200).send(
-    await profileGasCosts(contract_account_id, function_name, args)
+    await profiler.profileGasCosts(contract_account_id, function_name, args)
   );
 });
 

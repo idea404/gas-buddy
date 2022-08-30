@@ -9,7 +9,7 @@ const myFormat = winston.format.printf(({ level, message, timestamp }) => {
 
 let errorLogFileNameDate = new Date().toLocaleDateString();
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   level: "debug",
   format: winston.format.combine(winston.format.colorize(), winston.format.timestamp(), myFormat),
   defaultMeta: { service: "user-service" },

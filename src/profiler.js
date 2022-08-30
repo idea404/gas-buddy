@@ -1,4 +1,5 @@
 import { NEAR, Worker } from "near-workspaces";
+import { logger } from "./logger";
 
 const DEFAULT_CONTRACT_INIT_BALANCE = NEAR.parse("1000 N").toJSON();  // TODO: use config to set init_balance
 const DEFAULT_OPTIONS = {
@@ -28,7 +29,7 @@ export async function profileGasCosts(contractAccountId, functionName, argsObjec
 }
 
 async function spoonContract(root, contractAccountId, blockId) {
-  // TODO: use winston to log the contract creation 
+  logger.info(`Loading contract from ${contractAccountId} at block ${blockId}`);	
   try {
     return (contract = await root.importContract({
       mainnetContract: contractAccountId,
@@ -38,7 +39,7 @@ async function spoonContract(root, contractAccountId, blockId) {
     }));
   } catch (error) {
     if (error.message.includes(`State of contract ${contractAccountId} is too large to be viewed`)) {
-      // TODO: use winston logger to log outcome
+      logger.warn(`State of contract ${contractAccountId} is too large to be viewed, loading without data`);
       return (contract = await root.importContract({
         mainnetContract: contractAccountId,
         blockId: blockId,
@@ -47,7 +48,7 @@ async function spoonContract(root, contractAccountId, blockId) {
       }));
     }
     if (error.message.includes("The contract is not initialized")) {
-      // TODO: use winston logger to log outcome
+      logger.info(`Contract ${contractAccountId} is not initialized, throwing error`);
       throw new Error(`Contract deployed to ${contractAccountId} not initialized. Please provide a initialized contract.`);
     }
   }

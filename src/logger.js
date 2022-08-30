@@ -9,7 +9,7 @@ const myFormat = winston.format.printf(({ level, message, timestamp }) => {
 
 let errorLogFileNameDate = new Date().toLocaleDateString();
 
-export const logger = winston.createLogger({
+const logger = winston.createLogger({
   level: "debug",
   format: winston.format.combine(winston.format.colorize(), winston.format.timestamp(), myFormat),
   defaultMeta: { service: "user-service" },
@@ -19,3 +19,5 @@ export const logger = winston.createLogger({
     new winston.transports.File({ filename: path.join(LOGS_DIR, errorLogFileNameDate + "combined.log") }),
   ],
 });
+
+module.exports = { logger };

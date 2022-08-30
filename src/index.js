@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const profiler = require("./profiler");
+const asserts = require("./asserts");
 const PORT = process.env.PORT;
 
 app.use(express.json());
@@ -8,8 +9,6 @@ app.use(express.json());
 app.post("/test", (req, res) => {
   const { contract_account_id, function_name } = req.query;
   const args = req.body;
-
-  // TODO: validate contract_account_id and function_name and args
 
   res.status(200).send({
     message: "Welcome to the API",
@@ -20,13 +19,13 @@ app.post("/test", (req, res) => {
 });
 
 app.post("/", async (req, res) => {
-  const { contract_account_id, function_name } = req.query;
+  const { contract_account_id, function_name, block_id } = req.query;
   const { args } = req.body;
 
-  // TODO: validate contract_account_id and function_name and args
+  asserts.validateArgs(contract_account_id, function_name, block_id, args);
 
   res.status(200).send(
-    await profiler.profileGasCosts(contract_account_id, function_name, args)
+    await profiler.profileGasCosts(contract_account_id, function_name, args, block_id || "latest")
   );
 });
 

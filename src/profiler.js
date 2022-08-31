@@ -9,7 +9,7 @@ const DEFAULT_OPTIONS = {
 };
 
 // function for profiling
-async function profileGasCosts(contractAccountId, functionName, argsObject, blockId) {
+async function profileGasCosts(contractAccountId, functionName, blockId, argsObject) {
   lg.logger.info(`Profiling gas costs for contract: ${contractAccountId} function: ${functionName}`);
   lg.logger.debug(`Args: ${JSON.stringify(argsObject)} blockId: ${blockId}`);
   const worker = await ws.Worker.init();

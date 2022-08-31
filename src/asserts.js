@@ -1,20 +1,17 @@
 const https = require("https");
+const lg = require("./logger");
+const { providers } = require("near-api-js");
 
-function validateArgs(contractAccountId, functionName, blockId, args) {
-  validateContractAccountId(contractAccountId);
-  validateFunctionName(functionName);
-  validateBlockId(blockId);
-  validateArgs(args);
-}
-
-function validateContractAccountId(contractAccountId) {
+async function validateContractAccountId(contractAccountId) {
+  lg.logger.debug(`Validating contract account id ${contractAccountId}`);
   if (!contractAccountId) {
     throw new Error("contract_account_id is not set");
   }
-  checkAccountExist(contractAccountId);
+  await accountExists(contractAccountId);
 }
 
 function validateFunctionName(functionName) {
+  lg.logger.debug(`Validating function name ${functionName}`);
   if (!functionName) {
     throw new Error("function_name is not set");
   }
@@ -29,43 +26,22 @@ function validateArgs(args) {
   // TODO
 }
 
-async function checkAccountExist(accountId) {
-  const body = JSON.stringify({
-    jsonrpc: "2.0",
-    id: "dontcare",
-    method: "query",
-    params: {
+
+
+async function accountExists(accountId) {
+  const provider = new providers.JsonRpcProvider("https://rpc.testnet.near.org");
+  try {
+    await provider.query({
       request_type: "view_account",
-      finality: "final",
       account_id: accountId,
-    },
-  });
-
-  const options = {
-    hostname: "rpc.testnet.near.org",
-    port: "443",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": body.length,
-    },
-  };
-
-  var req = https.request(options, (res) => {
-    console.log("statusCode:", res.statusCode);
-    console.log("headers:", res.headers);
-
-    res.on("data", (d) => {
-      process.stdout.write(d);
+      finality: "final",
     });
-  });
-
-  req.on("error", (e) => {
-    console.error(e);
-  });
-
-  req.write(body);
-  req.end();
+  } catch (e) {
+    if (e.message === `[-32000] Server error: account ${accountId} does not exist while viewing`) {
+      throw new Error(`Account ${accountId} does not exist`);
+    }
+  }
+  lg.logger.debug(`Account ${accountId} exists`);
 }
 
-module.exports = { validateArgs, checkAccountExist };
+module.exports = { validateContractAccountId, accountExists };

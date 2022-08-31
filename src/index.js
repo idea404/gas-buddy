@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
-const profiler = require("./profiler");
-const asserts = require("./asserts");
+const api = require("./api");
 const PORT = process.env.PORT;
 
 app.use(express.json());
@@ -21,11 +20,9 @@ app.post("/test", (req, res) => {
 app.post("/", async (req, res) => {
   const { contract_account_id, function_name, block_id } = req.query;
   const { args } = req.body;
-
-  asserts.validateArgs(contract_account_id, function_name, block_id, args);
-
+  
   res.status(200).send(
-    await profiler.profileGasCosts(contract_account_id, function_name, args, block_id || "latest")
+      await api.gasBuddy(contract_account_id, function_name, block_id, args)
   );
 });
 

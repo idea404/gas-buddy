@@ -1,4 +1,3 @@
-const https = require("https");
 const lg = require("./logger");
 const { providers } = require("near-api-js");
 
@@ -7,7 +6,11 @@ async function validateContractAccountId(contractAccountId) {
   if (!contractAccountId) {
     throw new Error("contract_account_id is not set");
   }
-  await accountExists(contractAccountId);
+  const environmentNetwork = contractAccountId.split(".")[contractAccountId.split(".").length - 1];
+  if (environmentNetwork !== "near") {
+    throw new Error("Expected Smart Contract Account ID to end with .near");
+  }
+  await accountExists(contractAccountId, "mainnet");
 }
 
 function validateFunctionName(functionName) {
@@ -26,10 +29,8 @@ function validateArgs(args) {
   // TODO
 }
 
-
-
-async function accountExists(accountId) {
-  const provider = new providers.JsonRpcProvider("https://rpc.testnet.near.org");
+async function accountExists(accountId, environmentNetwork) {
+  const provider = new providers.JsonRpcProvider(`https://rpc.${environmentNetwork}.near.org`);
   try {
     await provider.query({
       request_type: "view_account",
@@ -38,10 +39,11 @@ async function accountExists(accountId) {
     });
   } catch (e) {
     if (e.message === `[-32000] Server error: account ${accountId} does not exist while viewing`) {
+      lg.logger.debug(`Account ${accountId} does not exist`);
       throw new Error(`Account ${accountId} does not exist`);
     }
   }
   lg.logger.debug(`Account ${accountId} exists`);
 }
 
-module.exports = { validateContractAccountId, accountExists };
+module.exports = { validateContractAccountId, validateFunctionName };

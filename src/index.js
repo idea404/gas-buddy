@@ -20,12 +20,32 @@ app.post("/test", (req, res) => {
 app.post("/", async (req, res) => {
   const { contract_account_id, function_name, block_id } = req.query;
   const { args } = req.body;
-  
-  res.status(200).send(
-      await api.gasBuddy(contract_account_id, function_name, block_id, args)
-  );
+
+  try {
+    const gasData = await api.gasBuddy(contract_account_id, function_name, block_id, args);
+    res.status(200).send(gasData);
+  } catch (e) {
+    res.status(e.status || 500).json({
+      error: {
+        message: e.message 
+      }
+    });
+  }
 });
 
+app.use((req, res, next) => {
+  res.status(404).send({
+    message: "Page not found.",
+  });
+});
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({
+    error: err,
+    message: err.message,
+  });
+});
 
 app.listen(PORT, () => {
   if (!PORT) {

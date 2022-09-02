@@ -39,4 +39,11 @@ describe("gasBuddy", () => {
       expect(e.message).toBe("function_name is not set");
     }
   });
+
+  it.todo("should fetch contract without data if contract state exceeds 50KB");
+  it.todo("should error if contract is not initialized");
+  it.todo("should error if contract is not deployed");
+  it.todo("should error if wrong args are provided");
+  it.todo("should error if function name does not exist");
+  it.todo("should error if function performs cross-contract calls");
 });

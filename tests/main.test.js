@@ -26,6 +26,10 @@ describe("gasBuddy", () => {
   });
 
   it("should error if function name is not set", async () => {
+    jest.mock("../src/asserts", () => ({
+      ...require.requireActual("../src/asserts"),
+      validateContractAccountId: jest.fn(),
+    }));
     try {
       await api.gasBuddy("test.near", null, "latest", {});
     } catch (e) {

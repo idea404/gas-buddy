@@ -15,4 +15,28 @@ describe("gasBuddy", () => {
       expect(e.message).toBe("contract_account_id is not set");
     }
   });
+
+  it("should only accept .near contract account ids", async () => {
+    try {
+      await api.gasBuddy("test", "test", "latest", {});
+    } catch (e) {
+      expect(e.message).toBe("Expected Smart Contract Account ID to end with .near");
+    }
+  });
+
+  it("should error if account does not exist", async () => {
+    try {
+      await api.gasBuddy("someunexistingaccountnobodywouldevertake.near", "test", "latest", {});
+    } catch (e) {
+      expect(e.message).toBe("Account someunexistingaccountnobodywouldevertake.near does not exist");
+    }
+  });
+
+  it("should error if function name is not set", async () => {
+    try {
+      await api.gasBuddy("test.near", null, "latest", {});
+    } catch (e) {
+      expect(e.message).toBe("function_name is not set");
+    }
+  });
 });

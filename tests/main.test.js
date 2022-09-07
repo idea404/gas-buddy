@@ -23,10 +23,11 @@ describe("gasBuddy", () => {
   });
 
   it("should error if account does not exist", async () => {
+    const accountId = "some.account.nobody.has.testnet";
     try {
-      await api.gasBuddy("someunexistingaccountnobodywouldevertake.near", "test", null, {}, IS_MAINNET);
+      await api.gasBuddy(accountId, "test", null, {}, IS_MAINNET);
     } catch (e) {
-      expect(e.message).toBe("Account someunexistingaccountnobodywouldevertake.near does not exist");
+      expect(e.message).toBe(`Account ${accountId} does not exist`);
     }
   });
 

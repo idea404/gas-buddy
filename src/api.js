@@ -2,9 +2,9 @@ const asserts = require("./asserts");
 const profiler = require("./profiler");
 
 async function gasBuddy(contractAccountId, functionName, blockId, args) {
-  await asserts.validateContractAccountId(contractAccountId);
+  const isMainnet = await asserts.validateContractAccountId(contractAccountId);
   asserts.validateFunctionName(functionName);
-  await profiler.profileGasCosts(contractAccountId, functionName, blockId || "latest", args);
+  return await profiler.profileGasCosts(contractAccountId, functionName, blockId || null, args, isMainnet);
 }
 
 module.exports = { gasBuddy };

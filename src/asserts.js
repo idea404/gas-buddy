@@ -6,11 +6,9 @@ async function validateContractAccountId(contractAccountId) {
   if (!contractAccountId) {
     throw new Error("contract_account_id is not set");
   }
-  const environmentNetwork = contractAccountId.split(".")[contractAccountId.split(".").length - 1];
-  if (environmentNetwork !== "near") {
-    throw new Error("Expected Smart Contract Account ID to end with .near");
-  }
-  await accountExists(contractAccountId, "mainnet");
+  const isMainnet = hasMainnetAddress(contractAccountId);
+  await accountExists(contractAccountId, isMainnet ? "mainnet" : "testnet");
+  return isMainnet;
 }
 
 function validateFunctionName(functionName) {
@@ -44,6 +42,14 @@ async function accountExists(accountId, environmentNetwork) {
     }
   }
   lg.logger.debug(`Account ${accountId} exists`);
+}
+
+function hasMainnetAddress(contractAccountId) {
+  const envRootAccountName = contractAccountId.split(".")[contractAccountId.split(".").length - 1];
+  if (envRootAccountName !== "near" && envRootAccountName !== "testnet") {
+    throw new Error(`Invalid contract account id: ${contractAccountId}. Expected contract account id to end with .near or .testnet`);
+  }
+  return envRootAccountName === "near";
 }
 
 module.exports = { validateContractAccountId, validateFunctionName };

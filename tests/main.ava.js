@@ -44,8 +44,8 @@ test("should return gas profile with data if contract state is less than 50KB", 
   t.true(gasProfile.summary.totalGasUnitsUsed > 0);
 });
 
-test.failing("should fetch contract without data if contract state exceeds 50KB", async (t) => {
-  const gasProfile = await gasBuddy(TEST_CONTRACT_SMALL_STATE, "add_message", null, { message: "Hello World!" }, IS_MAINNET);
+test("should fetch contract without data if contract state exceeds 50KB", async (t) => {
+  const gasProfile = await gasBuddy(TEST_CONTRACT_LARGE_STATE, "add_message", null, { message: "Hello World!" }, IS_MAINNET);
   t.false(gasProfile.withData);
   t.true(gasProfile.summary.totalGasUnitsUsed > 0);
 });

@@ -6,7 +6,7 @@ const DEFAULT_OPTIONS = {
   attached_deposit: "10" + "0".repeat(24), // 10 NEAR in yoctoNEAR
 };
 
-async function gasBuddy(contractAccountId, functionName, blockId, args, options = {}) {
+async function gasBuddy(contractAccountId, functionName, blockId, args, options = null) {
   const isMainnet = await assertParameters(contractAccountId, functionName);
   return await profileGasCosts(contractAccountId, functionName, blockId || null, args, isMainnet, options || DEFAULT_OPTIONS);
 }

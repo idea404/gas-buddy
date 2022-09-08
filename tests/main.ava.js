@@ -6,6 +6,7 @@ const TEST_CONTRACT_LARGE_STATE = "largegb.idea404.testnet";
 const TEST_ACCOUNT_NO_CONTRACT = "nocontract.idea404.testnet";
 const TEST_UNINITIALIZED_CONTRACT = "uninitialized.idea404.testnet";
 const TEST_WRONG_ARGS_CONTRACT = "wrongargs.idea404.testnet";
+const TEST_CROSS_CONTRACT_CALL = "crosscontract.idea404.testnet";
 
 test("should error if contract account id is not set", async (t) => {
   try {
@@ -112,4 +113,11 @@ test("should error if function name does not exist", async (t) => {
   }
 });
 
-test.todo("should error if function performs cross-contract calls");
+test("should error if function performs cross-contract calls", async (t) => {
+  try {
+    await gasBuddy(TEST_CROSS_CONTRACT_CALL, "query_greeting", null, {});
+    t.fail();
+  } catch (e) {
+    t.is(e.message, `Cross contract calls are not supported. Please provide a contract without cross contract calls.`);
+  }
+});

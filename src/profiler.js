@@ -85,6 +85,9 @@ function getSummary(gasProfileObject) {
     if (objectStr.includes(`{"MethodResolveError":"MethodNotFound"}`)) {
       throw new Error(`Method not found. Please provide a valid method.`);
     }
+    if (objectStr.includes("Smart contract panicked: not a function")) {
+      throw new Error(`Cross contract calls are not supported. Please provide a contract without cross contract calls.`);
+    }
     throw new Error(`FunctionCallError: ${JSON.stringify(gasProfileObject.result.status.Failure.ActionError.kind)}`);
   }
 

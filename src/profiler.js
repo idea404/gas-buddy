@@ -64,9 +64,10 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
 
 function enrichGasProfile(gasProfileObject, isFullData) {
   logger.info(`Enriching gas profile}`);
-  logger.debug(`Gas profile: ${JSON.stringify(gasProfileObject)}`);
   const summary = getSummary(gasProfileObject);
-  return { details: { ...gasProfileObject.result }, withData: isFullData, summary: summary };
+  const resultProfile = { details: { ...gasProfileObject.result }, withData: isFullData, summary: summary };
+  logger.debug(`Gas profile: ${JSON.stringify(resultProfile)}`);
+  return resultProfile;
 }
 
 function getSummary(gasProfileObject) {

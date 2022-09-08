@@ -15,7 +15,6 @@ const logger = createLogger({
   defaultMeta: { service: "user-service" },
   transports: [
     new _transports.File({ filename: join(LOGS_DIR, errorLogFileNameDate + "error.log"), level: "error" }),
-    new _transports.File({ filename: join(LOGS_DIR, errorLogFileNameDate + "debug.log"), level: "debug" }),
     new _transports.File({ filename: join(LOGS_DIR, errorLogFileNameDate + "combined.log") }),
   ],
 });

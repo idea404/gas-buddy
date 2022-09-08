@@ -2,8 +2,8 @@ import test from "ava";
 import { gasBuddy } from "../src/api.js";
 
 const IS_MAINNET = false;
-const TEST_CONTRACT_SMALL_STATE = "smallgb.idea404.testnet"; // TODO: CI
-const TEST_CONTRACT_LARGE_STATE = "xxx"; // TODO
+const TEST_CONTRACT_SMALL_STATE = "smallgb.idea404.testnet";
+const TEST_CONTRACT_LARGE_STATE = "largegb.idea404.testnet";
 
 test("should error if contract account id is not set", async (t) => {
   try {
@@ -44,7 +44,12 @@ test("should return gas profile with data if contract state is less than 50KB", 
   t.true(gasProfile.summary.totalGasUnitsUsed > 0);
 });
 
-test.todo("should fetch contract without data if contract state exceeds 50KB");
+test.failing("should fetch contract without data if contract state exceeds 50KB", async (t) => {
+  const gasProfile = await gasBuddy(TEST_CONTRACT_SMALL_STATE, "add_message", null, { message: "Hello World!" }, IS_MAINNET);
+  t.false(gasProfile.withData);
+  t.true(gasProfile.summary.totalGasUnitsUsed > 0);
+});
+
 test.todo("should error if contract is not initialized");
 test.todo("should error if contract is not deployed");
 test.todo("should error if prepaid gas is exceeded");

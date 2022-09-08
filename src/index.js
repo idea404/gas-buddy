@@ -20,6 +20,13 @@ app.post("/test", (req, res) => {
   });
 });
 
+app.get("/test", (req, res) => {
+  res.status(200).send({
+    message: "Welcome to the API",
+    machine_serving_response: hostname(),
+  });
+});
+
 app.post("/", async (req, res) => {
   const { contract_account_id, function_name, block_id } = req.query;
   const { args } = req.body;

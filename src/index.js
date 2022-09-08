@@ -1,6 +1,8 @@
 import express, { json } from "express";
-const app = express();
+import { hostname } from "os";
 import api from "./api.js";
+
+const app = express();
 const PORT = process.env.PORT;
 
 app.use(json());
@@ -11,6 +13,7 @@ app.post("/test", (req, res) => {
 
   res.status(200).send({
     message: "Welcome to the API",
+    machine_serving_response: hostname(),
     provided_parameters: `contract_account_id: ${contract_account_id}, function_name: ${function_name}`,
     provided_args: "args: " + JSON.stringify(args),
     args: `paramA: ${args.paramA}, paramB: ${args.paramB}`,

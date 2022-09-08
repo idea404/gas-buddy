@@ -4,6 +4,7 @@ import { gasBuddy } from "../src/api.js";
 const IS_MAINNET = false;
 const TEST_CONTRACT_SMALL_STATE = "smallgb.idea404.testnet";
 const TEST_CONTRACT_LARGE_STATE = "largegb.idea404.testnet";
+const TEST_ACCOUNT_NO_CONTRACT = "nocontract.idea404.testnet";
 
 test("should error if contract account id is not set", async (t) => {
   try {
@@ -50,8 +51,16 @@ test("should fetch contract without data if contract state exceeds 50KB", async 
   t.true(gasProfile.summary.totalGasUnitsUsed > 0);
 });
 
+test("should error if contract is not deployed", async (t) => {
+    try {
+        await gasBuddy(TEST_ACCOUNT_NO_CONTRACT, "add_message", null, { message: "Hello World!" }, IS_MAINNET);
+        t.fail();
+    } catch (e) {
+        t.is(e.message, `Account ${TEST_ACCOUNT_NO_CONTRACT} has not deployed a contract`);
+    }
+});
+
 test.todo("should error if contract is not initialized");
-test.todo("should error if contract is not deployed");
 test.todo("should error if prepaid gas is exceeded");
 test.todo("should error if wrong args are provided");
 test.todo("should error if function name does not exist");

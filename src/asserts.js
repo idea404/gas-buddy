@@ -1,6 +1,13 @@
 import { logger } from "./logger.js";
 import { providers } from "near-api-js";
 
+async function assertParameters(contractAccountId, functionName) {
+  const isMainnet = await validateContractAccountId(contractAccountId);
+  assertFunctionName(functionName);
+  await hasDeployedContract(contractAccountId, isMainnet ? "mainnet" : "testnet");
+  return isMainnet;
+}
+
 async function validateContractAccountId(contractAccountId) {
   logger.debug(`Validating contract account id ${contractAccountId}`);
   if (!contractAccountId) {
@@ -11,19 +18,11 @@ async function validateContractAccountId(contractAccountId) {
   return isMainnet;
 }
 
-function validateFunctionName(functionName) {
+function assertFunctionName(functionName) {
   logger.debug(`Validating function name ${functionName}`);
   if (!functionName) {
     throw new Error("function_name is not set");
   }
-  // TODO
-}
-
-function validateBlockId(blockId) {
-  // TODO
-}
-
-function validateArgs(args) {
   // TODO
 }
 
@@ -44,6 +43,19 @@ async function accountExists(accountId, environmentNetwork) {
   logger.debug(`Account ${accountId} exists`);
 }
 
+async function hasDeployedContract(accountId, environmentNetwork) {
+  const provider = new providers.JsonRpcProvider(`https://rpc.${environmentNetwork}.near.org`);
+  const response = await provider.query({
+      request_type: "view_account",
+      account_id: accountId,
+      finality: "final",
+    });
+  if (response.code_hash === "11111111111111111111111111111111") {
+    logger.debug(`Account ${accountId} has not deployed a contract`);
+    throw new Error(`Account ${accountId} has not deployed a contract`);
+  }
+}
+
 function hasMainnetAddress(contractAccountId) {
   const envRootAccountName = contractAccountId.split(".")[contractAccountId.split(".").length - 1];
   if (envRootAccountName !== "near" && envRootAccountName !== "testnet") {
@@ -52,4 +64,4 @@ function hasMainnetAddress(contractAccountId) {
   return envRootAccountName === "near";
 }
 
-export { validateContractAccountId, validateFunctionName };
+export { assertParameters };

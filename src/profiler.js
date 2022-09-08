@@ -59,6 +59,7 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
       logger.info(`Contract ${contractAccountId} is not initialized, throwing error`);
       throw new Error(`Contract deployed to ${contractAccountId} not initialized. Please provide a initialized contract.`);
     }
+    throw new Error(`Failed to load contract ${contractAccountId} at block ${blockId}: ${error}`);
   }
 }
 

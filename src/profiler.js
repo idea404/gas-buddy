@@ -72,11 +72,19 @@ function getSummary(gasProfileObject) {
   const totalGasUnitsUsedReceiptExecution = getGasUsedReceiptExecution(gasProfileObject);
   const totalGasUnitsUsed = totalGasUnitsUsedReceiptCreation + totalGasUnitsUsedReceiptExecution;
 
-  if (JSON.stringify(gasProfileObject).includes("Exceeded the prepaid gas.")) {
-    const gasAttached = parseInt(gasProfileObject.result.transaction.actions[0].FunctionCall.gas);
-    logger.debug(`Function gas unit expense (${totalGasUnitsUsed}) exceeded attached: ${gasAttached}`);
-    throw new Error(`Function gas unit expense (${totalGasUnitsUsed}) exceeded attached: ${gasAttached}`);
+  const objectStr = JSON.stringify(gasProfileObject);
+  if (objectStr.includes("FunctionCallError")) {
+    if (objectStr.includes("Exceeded the prepaid gas.")) {
+      const gasAttached = parseInt(gasProfileObject.result.transaction.actions[0].FunctionCall.gas);
+      logger.debug(`Function gas unit expense (${totalGasUnitsUsed}) exceeded attached: ${gasAttached}`);
+      throw new Error(`Function gas unit expense (${totalGasUnitsUsed}) exceeded attached: ${gasAttached}`);
+    }
+    if (objectStr.includes("Smart contract panicked: The contract is not initialized")) {
+      throw new Error(`Contract not initialized. Please provide an initialized contract.`);
+    }
+    throw new Error(`FunctionCallError: ${JSON.stringify(gasProfileObject.result.status.Failure.ActionError.kind)}`);
   }
+
 
   return {
     totalGasUnitsUsedReceiptCreation,

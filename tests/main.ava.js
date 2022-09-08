@@ -4,6 +4,8 @@ import { gasBuddy } from "../src/api.js";
 const TEST_CONTRACT_SMALL_STATE = "smallgb.idea404.testnet";
 const TEST_CONTRACT_LARGE_STATE = "largegb.idea404.testnet";
 const TEST_ACCOUNT_NO_CONTRACT = "nocontract.idea404.testnet";
+const TEST_UNINITIALIZED_CONTRACT = "uninitialized.idea404.testnet";
+const TEST_WRONG_ARGS_CONTRACT = "wrongargs.idea404.testnet";
 
 test("should error if contract account id is not set", async (t) => {
   try {
@@ -74,7 +76,32 @@ test("should error if prepaid gas is exceeded", async (t) => {
   }
 });
 
-test.todo("should error if contract is not initialized");
-test.todo("should error if wrong args are provided");
+test("should error if contract is not initialized", async (t) => {
+  const nftArgs = {
+    token_id: "0",
+    receiver_id: "alice.test.near",
+    token_metadata: {
+      title: "Olympus Mons",
+      description: "The tallest mountain in the charted solar system",
+      copies: 10000,
+    },
+  };
+  try {
+    await gasBuddy(TEST_UNINITIALIZED_CONTRACT, "nft_mint", null, nftArgs);
+    t.fail();
+  } catch (e) {
+    t.is(e.message, `Contract not initialized. Please provide an initialized contract.`);
+  }
+});
+
+test("should error if wrong args are provided", async (t) => {
+  try {
+    await gasBuddy(TEST_WRONG_ARGS_CONTRACT, "set_status", null, { wrongArg: 123 });
+    t.fail();
+  } catch (e) {
+    t.is(e.message, 'FunctionCallError: {"FunctionCallError":{"ExecutionError":"Smart contract panicked: panicked at \'Failed to deserialize input from JSON.: Error(\\"missing field \`message`\\", line: 1, column: 16)\', src/lib.rs:19:1"}}');
+  }
+});
+
 test.todo("should error if function name does not exist");
 test.todo("should error if function performs cross-contract calls");

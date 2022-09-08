@@ -3,13 +3,9 @@ import { logger } from "./logger.js";
 
 const DEFAULT_CONTRACT_INIT_BALANCE = NEAR.parse("1000 N").toJSON();
 const DEFAULT_ACCOUNT_INIT_BALANCE = NEAR.parse("100 N").toJSON();
-const DEFAULT_OPTIONS = {
-  gas: "300000000000000", // 300 TGas // TODO: can fetch dynamically
-  attached_deposit: "10" + "0".repeat(24), // 10 NEAR in yoctoNEAR
-};
 
 // function for profiling
-async function profileGasCosts(contractAccountId, functionName, blockId, argsObject, isMainnet) {
+async function profileGasCosts(contractAccountId, functionName, blockId, argsObject, isMainnet, options) {
   logger.info(`Profiling gas costs for contract: ${contractAccountId} function: ${functionName}`);
   logger.debug(`Args: ${JSON.stringify(argsObject)} blockId: ${blockId}`);
   const worker = await Worker.init();
@@ -19,7 +15,7 @@ async function profileGasCosts(contractAccountId, functionName, blockId, argsObj
 
   const alice = await root.createSubAccount("alice", { initialBalance: DEFAULT_ACCOUNT_INIT_BALANCE });
 
-  const result = await alice.callRaw(contract, functionName, argsObject, DEFAULT_OPTIONS);
+  const result = await alice.callRaw(contract, functionName, argsObject, options);
 
   await worker.tearDown().catch((error) => {
     logger.error("Failed to tear down the worker:", error);
@@ -64,10 +60,10 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
 }
 
 function enrichGasProfile(gasProfileObject, isFullData) {
-  logger.info(`Enriching gas profile}`);
+  logger.info(`Enriching gas profile`);
   const summary = getSummary(gasProfileObject);
   const resultProfile = { details: { ...gasProfileObject.result }, withData: isFullData, summary: summary };
-  logger.debug(`Gas profile: ${JSON.stringify(resultProfile)}`);
+  logger.debug(`Gas profile summary: ${JSON.stringify(resultProfile.summary)}`);
   return resultProfile;
 }
 
@@ -75,6 +71,13 @@ function getSummary(gasProfileObject) {
   const totalGasUnitsUsedReceiptCreation = getGasUsedReceiptCreation(gasProfileObject);
   const totalGasUnitsUsedReceiptExecution = getGasUsedReceiptExecution(gasProfileObject);
   const totalGasUnitsUsed = totalGasUnitsUsedReceiptCreation + totalGasUnitsUsedReceiptExecution;
+
+  if (JSON.stringify(gasProfileObject).includes("Exceeded the prepaid gas.")) {
+    const gasAttached = parseInt(gasProfileObject.result.transaction.actions[0].FunctionCall.gas);
+    logger.debug(`Function gas unit expense (${totalGasUnitsUsed}) exceeded attached: ${gasAttached}`);
+    throw new Error(`Function gas unit expense (${totalGasUnitsUsed}) exceeded attached: ${gasAttached}`);
+  }
+
   return {
     totalGasUnitsUsedReceiptCreation,
     totalGasUnitsUsedReceiptExecution,
@@ -85,11 +88,8 @@ function getSummary(gasProfileObject) {
 function getGasUsedReceiptCreation(gasProfileObject) {
   let gasUsedReceiptCreation = 0;
   for (const receipt of gasProfileObject.result.receipts_outcome) {
-    const receiptStatus = receipt.outcome.status;
-    if (receiptStatus.hasOwnProperty("SuccessValue")) {
-      if (receipt.outcome.metadata.gas_profile.length > 0) {
-        gasUsedReceiptCreation += parseInt(receipt.outcome.gas_burnt);
-      }
+    if (receipt.outcome.metadata.gas_profile.length > 0) {
+      gasUsedReceiptCreation += parseInt(receipt.outcome.gas_burnt);
     }
   }
   return gasUsedReceiptCreation;

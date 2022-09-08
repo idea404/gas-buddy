@@ -23,7 +23,6 @@ function assertFunctionName(functionName) {
   if (!functionName) {
     throw new Error("function_name is not set");
   }
-  // TODO
 }
 
 async function accountExists(accountId, environmentNetwork) {
@@ -46,10 +45,10 @@ async function accountExists(accountId, environmentNetwork) {
 async function hasDeployedContract(accountId, environmentNetwork) {
   const provider = new providers.JsonRpcProvider(`https://rpc.${environmentNetwork}.near.org`);
   const response = await provider.query({
-      request_type: "view_account",
-      account_id: accountId,
-      finality: "final",
-    });
+    request_type: "view_account",
+    account_id: accountId,
+    finality: "final",
+  });
   if (response.code_hash === "11111111111111111111111111111111") {
     logger.debug(`Account ${accountId} has not deployed a contract`);
     throw new Error(`Account ${accountId} has not deployed a contract`);

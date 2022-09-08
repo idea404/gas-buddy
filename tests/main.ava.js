@@ -100,7 +100,10 @@ test("should error if wrong args are provided", async (t) => {
     await gasBuddy(TEST_WRONG_ARGS_CONTRACT, "set_status", null, { wrongArg: 123 });
     t.fail();
   } catch (e) {
-    t.is(e.message, 'FunctionCallError: {"FunctionCallError":{"ExecutionError":"Smart contract panicked: panicked at \'Failed to deserialize input from JSON.: Error(\\"missing field \`message`\\", line: 1, column: 16)\', src/lib.rs:19:1"}}');
+    t.is(
+      e.message,
+      'FunctionCallError: {"FunctionCallError":{"ExecutionError":"Smart contract panicked: panicked at \'Failed to deserialize input from JSON.: Error(\\"missing field `message`\\", line: 1, column: 16)\', src/lib.rs:19:1"}}'
+    );
   }
 });
 

@@ -91,7 +91,6 @@ function getSummary(gasProfileObject) {
     throw new Error(`FunctionCallError: ${JSON.stringify(gasProfileObject.result.status.Failure.ActionError.kind)}`);
   }
 
-
   return {
     totalGasUnitsUsedReceiptCreation,
     totalGasUnitsUsedReceiptExecution,

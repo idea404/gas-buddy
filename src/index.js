@@ -7,6 +7,13 @@ const PORT = 3000;
 
 app.use(json());
 
+app.get("/test", (req, res) => {
+  res.send({
+    message: "Welcome to the API",
+    machine_serving_response: hostname(),
+  });
+});
+
 app.post("/test", (req, res) => {
   const { contract_account_id, function_name } = req.query;
   const args = req.body;
@@ -17,13 +24,6 @@ app.post("/test", (req, res) => {
     provided_parameters: `contract_account_id: ${contract_account_id}, function_name: ${function_name}`,
     provided_args: "args: " + JSON.stringify(args),
     args: `paramA: ${args.paramA}, paramB: ${args.paramB}`,
-  });
-});
-
-app.get("/test", (req, res) => {
-  res.status(200).send({
-    message: "Welcome to the API",
-    machine_serving_response: hostname(),
   });
 });
 

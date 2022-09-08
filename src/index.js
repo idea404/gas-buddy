@@ -1,9 +1,9 @@
-const express = require("express");
+import express, { json } from "express";
 const app = express();
-const api = require("./api");
+import api from "./api.js";
 const PORT = process.env.PORT;
 
-app.use(express.json());
+app.use(json());
 
 app.post("/test", (req, res) => {
   const { contract_account_id, function_name } = req.query;
@@ -27,8 +27,8 @@ app.post("/", async (req, res) => {
   } catch (e) {
     res.status(e.status || 500).json({
       error: {
-        message: e.message 
-      }
+        message: e.message,
+      },
     });
   }
 });

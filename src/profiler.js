@@ -1,8 +1,8 @@
-const ws = require("near-workspaces");
-const lg = require("./logger");
+import { NEAR, Worker } from "near-workspaces";
+import { logger } from "./logger.js";
 
-const DEFAULT_CONTRACT_INIT_BALANCE = ws.NEAR.parse("1000 N").toJSON();
-const DEFAULT_ACCOUNT_INIT_BALANCE = ws.NEAR.parse("100 N").toJSON();
+const DEFAULT_CONTRACT_INIT_BALANCE = NEAR.parse("1000 N").toJSON();
+const DEFAULT_ACCOUNT_INIT_BALANCE = NEAR.parse("100 N").toJSON();
 const DEFAULT_OPTIONS = {
   gas: "300000000000000", // 300 TGas // TODO: can fetch dynamically
   attached_deposit: "10" + "0".repeat(24), // 10 NEAR in yoctoNEAR
@@ -10,9 +10,9 @@ const DEFAULT_OPTIONS = {
 
 // function for profiling
 async function profileGasCosts(contractAccountId, functionName, blockId, argsObject, isMainnet) {
-  lg.logger.info(`Profiling gas costs for contract: ${contractAccountId} function: ${functionName}`);
-  lg.logger.debug(`Args: ${JSON.stringify(argsObject)} blockId: ${blockId}`);
-  const worker = await ws.Worker.init();
+  logger.info(`Profiling gas costs for contract: ${contractAccountId} function: ${functionName}`);
+  logger.debug(`Args: ${JSON.stringify(argsObject)} blockId: ${blockId}`);
+  const worker = await Worker.init();
   const root = worker.rootAccount;
 
   const { contract, withData } = await spoonContract(root, contractAccountId, blockId, isMainnet);
@@ -22,7 +22,7 @@ async function profileGasCosts(contractAccountId, functionName, blockId, argsObj
   const result = await alice.callRaw(contract, functionName, argsObject, DEFAULT_OPTIONS);
 
   await worker.tearDown().catch((error) => {
-    lg.logger.error("Failed to tear down the worker:", error);
+    logger.error("Failed to tear down the worker:", error);
   });
 
   const enrichedResult = enrichGasProfile(result, withData);
@@ -31,9 +31,9 @@ async function profileGasCosts(contractAccountId, functionName, blockId, argsObj
 }
 
 async function spoonContract(root, contractAccountId, blockId, isMainnet) {
-  lg.logger.info(`Loading contract from ${contractAccountId} at block ${blockId}`);
+  logger.info(`Loading contract from ${contractAccountId} at block ${blockId}`);
   try {
-    lg.logger.debug(`Trying to load contract from ${contractAccountId} at block ${blockId}`);
+    logger.debug(`Trying to load contract from ${contractAccountId} at block ${blockId}`);
     const contract = await root.importContract({
       mainnetContract: isMainnet ? contractAccountId : undefined,
       testnetContract: isMainnet ? undefined : contractAccountId,
@@ -41,11 +41,11 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
       withData: true,
       initialBalance: DEFAULT_CONTRACT_INIT_BALANCE,
     });
-    lg.logger.debug(`Contract ${contract} loaded from ${contractAccountId} at block ${blockId}`);
+    logger.debug(`Contract ${contract} loaded from ${contractAccountId} at block ${blockId}`);
     return { contract, withData: true };
   } catch (error) {
     if (error.message.includes(`State of contract ${contractAccountId} is too large to be viewed`)) {
-      lg.logger.warn(`State of contract ${contractAccountId} is too large to be viewed, loading without data`);
+      logger.warn(`State of contract ${contractAccountId} is too large to be viewed, loading without data`);
       const contract = await root.importContract({
         mainnetContract: isMainnet ? contractAccountId : undefined,
         testnetContract: isMainnet ? undefined : contractAccountId,
@@ -56,15 +56,15 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
       return { contract, withData: false };
     }
     if (error.message.includes("The contract is not initialized")) {
-      lg.logger.info(`Contract ${contractAccountId} is not initialized, throwing error`);
+      logger.info(`Contract ${contractAccountId} is not initialized, throwing error`);
       throw new Error(`Contract deployed to ${contractAccountId} not initialized. Please provide a initialized contract.`);
     }
   }
 }
 
 function enrichGasProfile(gasProfileObject, isFullData) {
-  lg.logger.info(`Enriching gas profile}`);
-  lg.logger.debug(`Gas profile: ${JSON.stringify(gasProfileObject)}`);
+  logger.info(`Enriching gas profile}`);
+  logger.debug(`Gas profile: ${JSON.stringify(gasProfileObject)}`);
   const summary = getSummary(gasProfileObject);
   return { details: { ...gasProfileObject.result }, withData: isFullData, summary: summary };
 }
@@ -97,4 +97,4 @@ function getGasUsedReceiptExecution(gasProfileObject) {
   return gasProfileObject.result.transaction_outcome.outcome.gas_burnt;
 }
 
-module.exports = { profileGasCosts };
+export { profileGasCosts };

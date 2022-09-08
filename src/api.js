@@ -1,10 +1,10 @@
-const asserts = require("./asserts");
-const profiler = require("./profiler");
+import { validateContractAccountId, validateFunctionName } from "./asserts.js";
+import { profileGasCosts } from "./profiler.js";
 
 async function gasBuddy(contractAccountId, functionName, blockId, args) {
-  const isMainnet = await asserts.validateContractAccountId(contractAccountId);
-  asserts.validateFunctionName(functionName);
-  return await profiler.profileGasCosts(contractAccountId, functionName, blockId || null, args, isMainnet);
+  const isMainnet = await validateContractAccountId(contractAccountId);
+  validateFunctionName(functionName);
+  return await profileGasCosts(contractAccountId, functionName, blockId || null, args, isMainnet);
 }
 
-module.exports = { gasBuddy };
+export { gasBuddy };

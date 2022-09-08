@@ -1,8 +1,8 @@
-const lg = require("./logger");
-const { providers } = require("near-api-js");
+import { logger } from "./logger.js";
+import { providers } from "near-api-js";
 
 async function validateContractAccountId(contractAccountId) {
-  lg.logger.debug(`Validating contract account id ${contractAccountId}`);
+  logger.debug(`Validating contract account id ${contractAccountId}`);
   if (!contractAccountId) {
     throw new Error("contract_account_id is not set");
   }
@@ -12,7 +12,7 @@ async function validateContractAccountId(contractAccountId) {
 }
 
 function validateFunctionName(functionName) {
-  lg.logger.debug(`Validating function name ${functionName}`);
+  logger.debug(`Validating function name ${functionName}`);
   if (!functionName) {
     throw new Error("function_name is not set");
   }
@@ -37,11 +37,11 @@ async function accountExists(accountId, environmentNetwork) {
     });
   } catch (e) {
     if (e.message === `[-32000] Server error: account ${accountId} does not exist while viewing`) {
-      lg.logger.debug(`Account ${accountId} does not exist`);
+      logger.debug(`Account ${accountId} does not exist`);
       throw new Error(`Account ${accountId} does not exist`);
     }
   }
-  lg.logger.debug(`Account ${accountId} exists`);
+  logger.debug(`Account ${accountId} exists`);
 }
 
 function hasMainnetAddress(contractAccountId) {
@@ -52,4 +52,4 @@ function hasMainnetAddress(contractAccountId) {
   return envRootAccountName === "near";
 }
 
-module.exports = { validateContractAccountId, validateFunctionName };
+export { validateContractAccountId, validateFunctionName };

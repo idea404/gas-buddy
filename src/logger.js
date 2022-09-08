@@ -1,23 +1,23 @@
-const winston = require("winston");
-const path = require("path");
+import { format as _format, createLogger, transports as _transports } from "winston";
+import { join } from "path";
 
 const LOGS_DIR = "./logs";
 
-const myFormat = winston.format.printf(({ level, message, timestamp }) => {
+const myFormat = _format.printf(({ level, message, timestamp }) => {
   return `${timestamp} [${level}]: ${message}`;
 });
 
 let errorLogFileNameDate = new Date().toLocaleDateString();
 
-const logger = winston.createLogger({
+const logger = createLogger({
   level: "debug",
-  format: winston.format.combine(winston.format.colorize(), winston.format.timestamp(), myFormat),
+  format: _format.combine(_format.colorize(), _format.timestamp(), myFormat),
   defaultMeta: { service: "user-service" },
   transports: [
-    new winston.transports.File({ filename: path.join(LOGS_DIR, errorLogFileNameDate + "error.log"), level: "error" }),
-    new winston.transports.File({ filename: path.join(LOGS_DIR, errorLogFileNameDate + "debug.log"), level: "debug" }),
-    new winston.transports.File({ filename: path.join(LOGS_DIR, errorLogFileNameDate + "combined.log") }),
+    new _transports.File({ filename: join(LOGS_DIR, errorLogFileNameDate + "error.log"), level: "error" }),
+    new _transports.File({ filename: join(LOGS_DIR, errorLogFileNameDate + "debug.log"), level: "debug" }),
+    new _transports.File({ filename: join(LOGS_DIR, errorLogFileNameDate + "combined.log") }),
   ],
 });
 
-module.exports = { logger };
+export { logger };

@@ -1,9 +1,9 @@
 import express, { json } from "express";
 import { hostname } from "os";
-import api from "./api.js";
+import { gasBuddy } from "./api.js";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = 3000;
 
 app.use(json());
 
@@ -25,7 +25,7 @@ app.post("/", async (req, res) => {
   const { args } = req.body;
 
   try {
-    const gasData = await api.gasBuddy(contract_account_id, function_name, block_id, args);
+    const gasData = await gasBuddy(contract_account_id, function_name, block_id, args);
     res.status(200).send(gasData);
   } catch (e) {
     res.status(e.status || 500).json({

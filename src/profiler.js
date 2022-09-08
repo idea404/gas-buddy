@@ -82,6 +82,9 @@ function getSummary(gasProfileObject) {
     if (objectStr.includes("Smart contract panicked: The contract is not initialized")) {
       throw new Error(`Contract not initialized. Please provide an initialized contract.`);
     }
+    if (objectStr.includes(`{"MethodResolveError":"MethodNotFound"}`)) {
+      throw new Error(`Method not found. Please provide a valid method.`);
+    }
     throw new Error(`FunctionCallError: ${JSON.stringify(gasProfileObject.result.status.Failure.ActionError.kind)}`);
   }
 

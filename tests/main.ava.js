@@ -15,7 +15,7 @@ test("should error if contract account id is not set", async (t) => {
   }
 });
 
-test("should only accept .near contract account ids", async (t) => {
+test("should only accept mainnet or testnet contract account ids", async (t) => {
   try {
     await gasBuddy("test", "test", null, {});
   } catch (e) {
@@ -103,5 +103,13 @@ test("should error if wrong args are provided", async (t) => {
   }
 });
 
-test.todo("should error if function name does not exist");
+test("should error if function name does not exist", async (t) => {
+  try {
+    await gasBuddy(TEST_CONTRACT_SMALL_STATE, "some_function", null, {});
+    t.fail();
+  } catch (e) {
+    t.is(e.message, `Method not found. Please provide a valid method.`);
+  }
+});
+
 test.todo("should error if function performs cross-contract calls");

@@ -2,7 +2,7 @@ import express, { json } from "express";
 import { hostname } from "os";
 import { gasBuddy } from "./api.js";
 
-const app = express();
+export const app = express();
 const PORT = 3000;
 
 app.use(json());
@@ -27,7 +27,7 @@ app.post("/test", (req, res) => {
   });
 });
 
-app.post("/", async (req, res) => {
+app.post("/profile", async (req, res) => {
   const { contract_account_id, function_name, block_id } = req.query;
   const args = req.body;
 

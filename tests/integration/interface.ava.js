@@ -1,5 +1,5 @@
 import test from "ava";
-import { gasBuddy } from "../src/api.js";
+import { gasBuddy } from "../../src/api.js";
 
 const TEST_CONTRACT_SMALL_STATE = "smallgb.idea404.testnet";
 const TEST_CONTRACT_LARGE_STATE = "largegb.idea404.testnet";

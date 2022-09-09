@@ -37,7 +37,7 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
       withData: true,
       initialBalance: DEFAULT_CONTRACT_INIT_BALANCE,
     });
-    logger.debug(`Contract ${contract} loaded from ${contractAccountId} at block ${blockId}`);
+    logger.debug(`Contract loaded from ${contractAccountId} at block ${blockId}`);
     return { contract, withData: true };
   } catch (error) {
     if (error.message.includes(`State of contract ${contractAccountId} is too large to be viewed`)) {
@@ -61,17 +61,13 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
 
 function enrichGasProfile(gasProfileObject, isFullData) {
   logger.info(`Enriching gas profile`);
+  parseFunctionCallErrors(gasProfileObject);
   const summary = getSummary(gasProfileObject);
-  const resultProfile = { details: { ...gasProfileObject.result }, withData: isFullData, summary: summary };
-  logger.debug(`Gas profile summary: ${JSON.stringify(resultProfile.summary)}`);
-  return resultProfile;
+  logger.debug(`Gas profile summary: ${JSON.stringify({summary, withData: isFullData})}`);
+  return { details: { ...gasProfileObject.result }, withData: isFullData, summary: summary };
 }
 
-function getSummary(gasProfileObject) {
-  const totalGasUnitsUsedReceiptCreation = getGasUsedReceiptCreation(gasProfileObject);
-  const totalGasUnitsUsedReceiptExecution = getGasUsedReceiptExecution(gasProfileObject);
-  const totalGasUnitsUsed = totalGasUnitsUsedReceiptCreation + totalGasUnitsUsedReceiptExecution;
-
+function parseFunctionCallErrors(gasProfileObject) {
   const objectStr = JSON.stringify(gasProfileObject);
   if (objectStr.includes("FunctionCallError")) {
     if (objectStr.includes("Exceeded the prepaid gas.")) {
@@ -90,12 +86,23 @@ function getSummary(gasProfileObject) {
     }
     throw new Error(`FunctionCallError: ${JSON.stringify(gasProfileObject.result.status.Failure.ActionError.kind)}`);
   }
+}
 
-  return {
-    totalGasUnitsUsedReceiptCreation,
-    totalGasUnitsUsedReceiptExecution,
-    totalGasUnitsUsed,
-  };
+function getSummary(gasProfileObject) {
+  try {
+    const totalGasUnitsUsedReceiptCreation = getGasUsedReceiptCreation(gasProfileObject);
+    const totalGasUnitsUsedReceiptExecution = getGasUsedReceiptExecution(gasProfileObject);
+    const totalGasUnitsUsed = totalGasUnitsUsedReceiptCreation + totalGasUnitsUsedReceiptExecution;
+    return {
+      totalGasUnitsUsedReceiptCreation,
+      totalGasUnitsUsedReceiptExecution,
+      totalGasUnitsUsed,
+    };
+  } catch (error) {
+    logger.error(`Failed to get gas summary: ${error}, ${error.stack}`);
+    logger.error(`Gas profile object: ${JSON.stringify(gasProfileObject)}`);
+    throw error;
+  }
 }
 
 function getGasUsedReceiptCreation(gasProfileObject) {

@@ -8,7 +8,14 @@ const DEFAULT_OPTIONS = {
 
 async function gasBuddy(contractAccountId, functionName, blockId, args, options = null) {
   const isMainnet = await assertParameters(contractAccountId, functionName);
-  return await profileGasCosts(contractAccountId, functionName, blockId || null, args, isMainnet, options || DEFAULT_OPTIONS);
+  return await profileGasCosts(
+    contractAccountId, 
+    functionName, 
+    blockId || null, 
+    args, 
+    isMainnet, 
+    options || DEFAULT_OPTIONS
+  );
 }
 
 export { gasBuddy };

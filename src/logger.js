@@ -7,7 +7,7 @@ const myFormat = _format.printf(({ level, message, timestamp }) => {
   return `${timestamp} [${level}]: ${message}`;
 });
 
-let errorLogFileNameDate = new Date().toLocaleDateString();
+let errorLogFileNameDate = `${new Date().getUTCFullYear()}/${new Date().getUTCMonth()}/${new Date().getUTCDate()}/`;
 
 const logger = createLogger({
   level: "debug",

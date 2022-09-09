@@ -61,13 +61,13 @@ async function spoonContract(root, contractAccountId, blockId, isMainnet) {
 
 function enrichGasProfile(gasProfileObject, isFullData) {
   logger.info(`Enriching gas profile`);
-  parseFunctionCallErrors(gasProfileObject);
   const summary = getSummary(gasProfileObject);
+  parseFunctionCallErrors(gasProfileObject, summary.totalGasUnitsUsed);
   logger.debug(`Gas profile summary: ${JSON.stringify({summary, withData: isFullData})}`);
   return { details: { ...gasProfileObject.result }, withData: isFullData, summary: summary };
 }
 
-function parseFunctionCallErrors(gasProfileObject) {
+function parseFunctionCallErrors(gasProfileObject, totalGasUnitsUsed) {
   const objectStr = JSON.stringify(gasProfileObject);
   if (objectStr.includes("FunctionCallError")) {
     if (objectStr.includes("Exceeded the prepaid gas.")) {

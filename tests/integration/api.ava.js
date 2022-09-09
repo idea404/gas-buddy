@@ -30,7 +30,7 @@ test("POST /test", async (t) => {
   t.deepEqual({ ...res.body, ...{ machine_serving_response: "ABC" } }, expected);
 });
 
-test("POST /", async (t) => {
+test("POST /profile", async (t) => {
   const contractAccountId = "smallgb.idea404.testnet";
   const functionName = "add_message";
   const res = await request(app).post(`/profile?contract_account_id=${contractAccountId}&function_name=${functionName}`).send({

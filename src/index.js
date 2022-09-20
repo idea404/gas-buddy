@@ -28,8 +28,7 @@ app.post("/test", (req, res) => {
 });
 
 app.post("/profile", async (req, res) => {
-  const { contract_account_id, function_name, block_id } = req.query;
-  const args = req.body;
+  const { contract_account_id, function_name, block_id, args } = req.body;
 
   try {
     const gasData = await gasBuddy(contract_account_id, function_name, block_id, args);

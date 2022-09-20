@@ -33,9 +33,13 @@ test("POST /test", async (t) => {
 test("POST /profile", async (t) => {
   const contractAccountId = "smallgb.idea404.testnet";
   const functionName = "add_message";
-  const res = await request(app).post(`/profile?contract_account_id=${contractAccountId}&function_name=${functionName}`).send({
-    text: "hello",
-  });
+  const res = await request(app)
+    .post("/profile")
+    .send({
+      contract_account_id: contractAccountId,
+      function_name: functionName,
+      args: { text: "hello" },
+    });
   t.is(res.status, 200);
   t.is(res.body.details.status.SuccessValue, "");
   t.true(res.body.summary.totalGasUnitsUsed > 0);

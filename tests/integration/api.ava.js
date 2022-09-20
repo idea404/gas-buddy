@@ -2,6 +2,9 @@ import { app } from "../../src/index.js";
 import test from "ava";
 import request from "supertest";
 
+import { logger } from "../../src/logger.js";
+logger.level = "error";
+
 test("GET /test", async (t) => {
   const res = await request(app).get("/test");
   const expected = {

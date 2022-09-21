@@ -40,7 +40,7 @@ test("POST /profile", async (t) => {
     .post("/profile")
     .send({
       contract_account_id: contractAccountId,
-      function_name: functionName,
+      method: functionName,
       args: { text: "hello" },
     });
   t.is(res.status, 200);

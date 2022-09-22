@@ -21,7 +21,7 @@ async function validateContractAccountId(contractAccountId) {
 function assertFunctionName(functionName) {
   logger.debug(`Validating function name ${functionName}`);
   if (!functionName) {
-    throw new Error("function_name is not set");
+    throw new Error("parameter 'method' is not set");
   }
 }
 

@@ -8,6 +8,9 @@ const TEST_UNINITIALIZED_CONTRACT = "uninitialized.idea404.testnet";
 const TEST_WRONG_ARGS_CONTRACT = "wrongargs.idea404.testnet";
 const TEST_CROSS_CONTRACT_CALL = "crosscontract.idea404.testnet";
 
+import { logger } from "../../src/logger.js";
+logger.level = "error";
+
 test("should error if contract account id is not set", async (t) => {
   try {
     await gasBuddy(null, "test", null, {});

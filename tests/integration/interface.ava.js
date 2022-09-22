@@ -36,11 +36,11 @@ test("should error if account does not exist", async (t) => {
   }
 });
 
-test("should error if function name is not set", async (t) => {
+test("should error if method is not set", async (t) => {
   try {
     await gasBuddy("test.near", null, null, {});
   } catch (e) {
-    t.is(e.message, "function_name is not set");
+    t.is(e.message, "parameter 'method' is not set");
   }
 });
 

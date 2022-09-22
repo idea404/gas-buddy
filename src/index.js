@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
         body_parameters: {
           contract_account_id: "The contract account ID",
           method: "The method name",
-          args: "The arguments to pass to the method, passed in as a JSON object of key-value pairs. For example, {\"text\": \"hello\"}",
+          args: `The arguments to pass to the method, passed in as a JSON object of key-value pairs. For example, {"text": "hello"}`,
         },
       },
     },

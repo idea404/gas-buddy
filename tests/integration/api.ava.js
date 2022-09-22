@@ -33,6 +33,26 @@ test("POST /test", async (t) => {
   t.deepEqual({ ...res.body, ...{ machine_serving_response: "ABC" } }, expected);
 });
 
+test("GET /", async (t) => {
+  const res = await request(app).get("/");
+  const expected = {
+    message: "Welcome to the GasBuddy API",
+    methods: {
+      "/profile": {
+        method: "POST",
+        description: "Get gas usage for a given contract call",
+        body_parameters: {
+          contract_account_id: "The contract account ID",
+          method: "The method name",
+          args: "The arguments to pass to the method, passed in as a JSON object of key-value pairs. For example, {\"text\": \"hello\"}",
+        },
+      },
+    },
+  };
+  t.is(res.status, 200);
+  t.deepEqual(res.body, expected);
+});
+
 test("POST /profile", async (t) => {
   const contractAccountId = "smallgb.idea404.testnet";
   const functionName = "add_message";

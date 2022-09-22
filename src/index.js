@@ -27,6 +27,23 @@ app.post("/test", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.send({
+    message: "Welcome to the GasBuddy API",
+    methods: {
+      "/profile": {
+        method: "POST",
+        description: "Get gas usage for a given contract call",
+        body_parameters: {
+          contract_account_id: "The contract account ID",
+          method: "The method name",
+          args: "The arguments to pass to the method, passed in as a JSON object of key-value pairs. For example, {\"text\": \"hello\"}",
+        },
+      },
+    },
+  });
+});
+
 app.post("/profile", async (req, res) => {
   const { contract_account_id, method, block_id, args } = req.body;
 

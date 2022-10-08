@@ -1,6 +1,6 @@
 # GasBuddy 😉🛠️
 
-Get gas prices and gas estimates for your smart contract function on NEAR.
+Get gas prices and gas estimates for your smart contract function on NEAR ⛽️📄
 
 Sample cURL command: 
 

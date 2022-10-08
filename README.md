@@ -18,6 +18,11 @@ curl --location --request POST 'https://api.gasbuddy.tech/profile' \
 
 Get more info: 
 
-```bas
+```bash
 curl https://api.gasbuddy.tech/
+```
+
+
+```bash
+curl https://gasbuddy.near-apis.com/
 ```
